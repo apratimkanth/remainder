@@ -1,24 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+// import './App.css';
+ import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
+import Login from './components/Login';
+// import Register from './pages/Register';
+// import { auth } from "./firebaseConfig";
+//import { Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+// import { useAuthState } from "react-firebase-hooks/auth";
+import Home from "./components/Home";
+import Register from "./components/Register";
+
 
 function App() {
+  // const [isAuth,setAuth]=useState(false);
+  // const [user] = useAuthState(auth);
+  // const RequiredAuth=({children})=>{
+  //   const [user] = useAuthState(auth);
+  //   console.log(user);
+  //   return user?children:<Navigate to="/"/>;
+  // }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    
+  
+  
+    
+  
+    
+       <Routes>
+        <Route path="/" element={<Login/>} />
+        <Route path="/register" element={<Register/>}/>
+        <Route path="/home" element={<Home/>}/>
+
+        
+        {/* <Route path="/home" >
+          <Route index element={<RequiredAuth>{<Home/>}</RequiredAuth>}/>
+           <Route path="write" element={<Write/>}/>
+        </Route> */}
+         
+      </Routes>
+     
   );
 }
 
