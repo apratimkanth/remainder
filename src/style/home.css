@@ -1,0 +1,80 @@
+.reminder-container{
+  display: block;
+}
+.card {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  .linkstyle{
+    text-decoration: none;
+  }
+  
+  .left-part {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .date {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .details {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .right-part {
+    display: flex;
+    align-items: center;
+  }
+  
+  .edit-icon,
+  .delete-icon,
+  .disable-button {
+    margin-left: 10px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+
+  .disable-button.enabled {
+    background-color: green;
+    /* Additional styles for enabled state */
+  }
+  
+  .disable-button.disabled {
+    background-color: #ff0000;
+    /* Additional styles for disabled state */
+  }
+  
+  .edit-icon:hover,
+  .delete-icon:hover {
+    background-color: #0056b3;
+  }
+  .logout-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #ff6961;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+  

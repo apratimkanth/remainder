@@ -1,108 +1,128 @@
 import React from 'react'
-import Login from './Login'
-import { useState } from 'react';
-import { Link,useNavigate } from 'react-router-dom';
-import { auth } from '../Firebase';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+// import { auth } from '../Firebase';
 import { signOut } from "firebase/auth";
+import { Link } from "react-router-dom";
+import {toast } from 'react-toastify';
+import "../style/home.css";
+
+
+import { Timestamp, collection, addDoc,getDocs,deleteDoc, doc,updateDoc } from "firebase/firestore";
+// import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage, db, auth } from "../Firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 
 const ReminderComponent = () => {
+  //universal
   let navigate = useNavigate();
+  const [user] = useAuthState(auth);
+  //get remainder
+  const [remainders, setRemainders] = useState([]);
+  const postsCollectionRef = collection(db, "remainders");
+
+  const getremainder = async () => {
+    try {
+      const data = await getDocs(postsCollectionRef);
+    setRemainders(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    } catch (err) {
+      console.log(err);
+    }
+  };
   
-  const [reminders, setReminders] = useState([]);
-  const [newReminder, setNewReminder] = useState('');
-  const [reminderDate, setReminderDate] = useState('');
+  //set remainder
   const [editedReminder, setEditedReminder] = useState('');
   const [editIndex, setEditIndex] = useState(null);
+  const addReminder=()=>{
+    navigate('/setremainder');
+  }
 
-  const addReminder = () => {
-    if (newReminder && reminderDate) {
-      setReminders([...reminders, { date: reminderDate, text: newReminder, enabled: true }]);
-      setNewReminder('');
-      setReminderDate('');
-    }
-
-    
+  //delete remainder
+  const deleteReminder = async(id) => {
+    console.log(id);
+    const postDoc = doc(db, "remainders", id);
+    await deleteDoc(postDoc);
+    getremainder();
   };
 
-  const deleteReminder = (index) => {
-    const updatedReminders = [...reminders];
-    updatedReminders.splice(index, 1);
-    setReminders(updatedReminders);
-  };
-
-  const editReminder = (index) => {
-    setEditedReminder(reminders[index].text);
-    setEditIndex(index);
-  };
-
-  const saveEditedReminder = () => {
-    if (editedReminder) {
-      const updatedReminders = [...reminders];
-      updatedReminders[editIndex] = { ...updatedReminders[editIndex], text: editedReminder };
-      setReminders(updatedReminders);
-      setEditIndex(null);
-      setEditedReminder('');
-    }
-  };
-
-  const toggleReminder = (index) => {
-    const updatedReminders = [...reminders];
-    updatedReminders[index].enabled = !updatedReminders[index].enabled;
-    setReminders(updatedReminders);
-  };
+  //logout
   const logout = () => {
     signOut(auth);
-    navigate("/");
+    // navigate("/");
+    navigate('/logout');
   };
 
+  // javascript
+  let newDate = new Date()
+  let date = newDate.getDate();
+  let month = newDate.getMonth() + 1;
+  let year = newDate.getFullYear();
+  const day = {
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+    7: "Sunday"
+    };
+
+    useEffect(() => {
+      getremainder();
+    }, []);
+
+
+    const handleDisableClick = (id,enable) => {
+      const Ref = doc(db, "remainders", id);
+        updateDoc(Ref, {
+          enabled:!enable,
+          }).then(() => {
+              console.log("Updated successfully");
+              getremainder();
+          }).catch((e) => {
+                console.log(e);
+          });
+    };
+
   return (
-    <div className="reminder-container">
+    <div classNameName="reminder-container">
       <button className="logout-button" onClick={logout}>Logout</button>
       <div>
-      <h2>Reminders</h2>
-      <ul>
-        {reminders.map((reminder, index) => (
-          <li key={index}>
-            {editIndex === index ? (
-              <div>
-                <input
-                  type="text"
-                  value={editedReminder}
-                  onChange={(e) => setEditedReminder(e.target.value)}
-                />
-                <button onClick={saveEditedReminder}>Save</button>
-              </div>
-            ) : (
-              <span>{reminder.date} - {reminder.text}</span>
-            )}
-            <button onClick={() => toggleReminder(index)}>
-              {reminder.enabled ? 'Disable' : 'Enable'}
-            </button>
-            <button onClick={() => editReminder(index)}>Edit</button>
-            <button onClick={() => deleteReminder(index)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-      <div>
-        <label>Date:</label>
-        <input
-          type="date"
-          value={reminderDate}
-          onChange={(e) => setReminderDate(e.target.value)}
-        />
-        <br />
-        <label>Subject:</label>
-        <textarea
-          value={newReminder}
-          onChange={(e) => setNewReminder(e.target.value)}
-        />
-        <br />
-        <button onClick={addReminder}>Add Reminder</button>
+        <h2>Welcome to Remainder application {user.displayName}</h2>
+        <h2>Today is {day[newDate.getDay()]}, {date}th of {new Date().toLocaleString("en-US", { month: "long" })}</h2>
       </div>
+
+      {remainders.map((post) => (
+      post.userId==user.uid?
+      <div className="card">
+        <div className="left-part">
+          <Link to={`/viewremainder/${post.id}`} className='linkstyle'>
+            <div className="date">{post.date}</div>
+            <div className="details">
+              <div className="subject">{post.subject}</div>
+              <div className="description">{post.text}</div>
+            </div>
+          </Link>
+        </div>
+        <div className="right-part">
+          <button className="edit-icon">
+            <Link to={`/updateremainder/${post.id}`}>&#9998;</Link>
+          </button>
+          <button className="delete-icon"  onClick={()=>deleteReminder(post.id)}>
+            &#128465;
+          </button>
+          <button
+            className={`disable-button ${post.enabled ? 'enabled' : 'disabled'}`}
+            onClick={()=>handleDisableClick(post.id,post.enabled)}
+          >
+            {post.enabled ? 'Disable' : 'Enable'}
+          </button>
+        </div>
+      </div>:<></>
+      ))}
+      <button onClick={addReminder} className='addrem'>Add Reminder</button>
     </div>
-    </div>
-    
   );
 };
 

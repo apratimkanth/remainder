@@ -3,7 +3,7 @@ import "../style/login.css"
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link } from "react-router-dom";
-//import { toast } from 'react-toastify';
+import {toast } from 'react-toastify';
 import { auth } from "../Firebase";
 
 
@@ -17,8 +17,8 @@ function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/home");
     } catch (error) {
+      toast(error.code, { type: "error" });
       console.log(error);
-      //toast(error.code, { type: "error" });
     }
   };
   return (

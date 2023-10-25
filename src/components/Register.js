@@ -2,7 +2,7 @@ import {React, useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../Firebase";
 import { useNavigate } from "react-router-dom";
-//import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "../style/remainder.css"
 
 
@@ -19,9 +19,8 @@ const Register = () => {
         navigate("/home");
       
       } catch (error) {
-        //console.log('jekkle')
-        console.log(error);
-       //toast(error.code, { type: "error" });
+        console.log(error.code);
+       toast(error.code, { type: "error" });
       }
     };
 
@@ -53,6 +52,7 @@ const Register = () => {
         />
       </div>
       <button onClick={handleRegister}>Register</button>
+      <button onClick={()=>{navigate('/')}}>Login</button>
     </div>
   );
 };
